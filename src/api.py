@@ -32,7 +32,7 @@ def construct_dictionary(word_to_weight):
     return length_word_weight
     
 class WS:
-    def __init__(self, data_dir, disable_cuda=True):
+    def __init__(self, data_dir, disable_cuda=True, per_process_gpu_memory_fraction=None):
         config = model_ws.Config()
         config.name = "model_asbc_Att-0_BiLSTM-cross-2-500_batch128-run1"
         config.attention_heads = 0
@@ -50,7 +50,11 @@ class WS:
             
         with tf.Graph().as_default():
             model = model_ws.Model(config)
-            model.sess = tf.Session()
+            if per_process_gpu_memory_fraction:
+                session_config = tf.GPUOptions(per_process_gpu_memory_fraction=per_process_gpu_memory_fraction)
+            else:
+                session_config = None
+            model.sess = tf.Session(config=session_config)
             model.sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
             saver.restore(model.sess, os.path.join(data_dir, "model_ws", config.name))
@@ -150,7 +154,7 @@ class WS:
         return word_sentence_list
         
 class POS:
-    def __init__(self, data_dir, disable_cuda=True):
+    def __init__(self, data_dir, disable_cuda=True, per_process_gpu_memory_fraction=None):
         config = model_pos.Config()
         config.name = "model_asbc_Att-0_BiLSTM-2-500_batch256-run1"
         config.attention_heads = 0
@@ -170,7 +174,11 @@ class POS:
             
         with tf.Graph().as_default():
             model = model_pos.Model(config)
-            model.sess = tf.Session()
+            if per_process_gpu_memory_fraction:
+                session_config = tf.GPUOptions(per_process_gpu_memory_fraction=per_process_gpu_memory_fraction)
+            else:
+                session_config = None
+            model.sess = tf.Session(config=session_config)
             model.sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
             saver.restore(model.sess, os.path.join(data_dir, "model_pos", config.name))
@@ -250,7 +258,7 @@ class POS:
         return pos_sentence_list
         
 class NER:
-    def __init__(self, data_dir, disable_cuda=True):
+    def __init__(self, data_dir, disable_cuda=True, per_process_gpu_memory_fraction=None):
         config = model_ner.Config()
         config.name = "model_ontochinese_Att-0_BiLSTM-2-500_batch128-run1"
         config.attention_heads = 0
@@ -272,7 +280,11 @@ class NER:
             
         with tf.Graph().as_default():
             model = model_ner.Model(config)
-            model.sess = tf.Session()
+            if per_process_gpu_memory_fraction:
+                session_config = tf.GPUOptions(per_process_gpu_memory_fraction=per_process_gpu_memory_fraction)
+            else:
+                session_config = None
+            model.sess = tf.Session(config=session_config)
             model.sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
             saver.restore(model.sess, os.path.join(data_dir, "model_ner", config.name))
